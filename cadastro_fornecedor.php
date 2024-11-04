@@ -1,9 +1,8 @@
 <?php
 // Inclui o arquivo que valida a sessão do usuário
 include('valida_sessao.php');
-
 // Inclui o arquivo de conexão com o banco de dados
-include("conexao.php");
+include('conexao.php');
 
 // Função para redimensionar e salvar a imagem
 function redimensionarESalvarImagem($arquivo, $largura = 80, $altura = 80) {
@@ -14,7 +13,7 @@ function redimensionarESalvarImagem($arquivo, $largura = 80, $altura = 80) {
 
     // Verifica se é uma imagem válida
     $check = getimagesize($arquivo["tmp_name"]);
-    if ($check === false) {
+    if($check === false) {
         return "O arquivo não é uma imagem válida.";
     }
 
@@ -23,49 +22,49 @@ function redimensionarESalvarImagem($arquivo, $largura = 80, $altura = 80) {
         return "O arquivo é muito grande. O tamanho máximo permitido é 5MB.";
     }
 
-    // Permite apenas alguns formato de arquivo
-    if ($tipo_arquivo != "jpg" && $tipo_arquivo != "jpeg" && $tipo_arquivo != "png" && $tipo_arquivo != "gif") {
+    // Permite apenas alguns formatos de arquivo
+    if($tipo_arquivo != "jpg" && $tipo_arquivo != "png" && $tipo_arquivo != "jpeg" && $tipo_arquivo != "gif" ) {
         return "Apenas arquivos JPG, JPEG, PNG e GIF são permitidos.";
     }
 
     // Cria uma nova imagem a partir do arquivo enviado
-    if ($tipo_arquivo == "jpeg" || $tipo_arquivo == "jpeg") {
-        $imagem_original = imagecreatefromjpeg($arquivo ["tmp_name"]);
-        } elseif ($tipo_arquivo == "png") {
-        $imagem_original = imagecreatefrompng($arquivo ["tmp_name"]);
-        } elseif ($tipo_arquivo == "gif") {
-        $imagem_original = imagecreatefromgif($arquivo ["tmp_name"]);
-        }
+    if ($tipo_arquivo == "jpg" || $tipo_arquivo == "jpeg") {
+        $imagem_original = imagecreatefromjpeg($arquivo["tmp_name"]);
+    } elseif ($tipo_arquivo == "png") {
+        $imagem_original = imagecreatefrompng($arquivo["tmp_name"]);
+    } elseif ($tipo_arquivo == "gif") {
+        $imagem_original = imagecreatefromgif($arquivo["tmp_name"]);
+    }
 
-        // Obtém as dimensões originais da imagem
-        $largura_original = imagesx($imagem_original);
-        $altura_original = imagesy($imagem_original);
+    // Obtém as dimensões originais da imagem
+    $largura_original = imagesx($imagem_original);
+    $altura_original = imagesy($imagem_original);
 
-        // Calcule as novas dimensões mantendo a proporção
-        $ratio = min($largura / $largura_original, $altura / $altura_original);
-        $nova_largura = $largura_original * $ratio;
-        $nova_altura = $altura_original * $ratio;
+    // Calcula as novas dimensões mantendo a proporção
+    $ratio = min($largura / $largura_original, $altura / $altura_original);
+    $nova_largura = $largura_original * $ratio;
+    $nova_altura = $altura_original * $ratio;
 
-        // Cria uma nova imagem com as dimensões calculadas
-        $nova_imagem = imagecreatetruecolor($nova_largura, $nova_altura);
+    // Cria uma nova imagem com as dimensões calculadas
+    $nova_imagem = imagecreatetruecolor($nova_largura, $nova_altura);
 
-        // Redimensiona a imagem original para a nova imagem
-        imagecopyresampled($nova_imagem, $imagem_original, 0, 0, 0, 0, $nova_largura, $nova_altura, $largura_original, $altura_original);
+    // Redimensiona a imagem original para a nova imagem
+    imagecopyresampled($nova_imagem, $imagem_original, 0, 0, 0, 0, $nova_largura, $nova_altura, $largura_original, $altura_original);
 
-        // Salva a nova imagem
-        if ($tipo_arquivo == "jpg" || $tipo_arquivo == "jpeg") {
-            imagejpeg($nova_imagem, $caminho_completo, 90);
-        } elseif ($tipo_arquivo == "png") {
-            imagepng($nova_imagem, $caminho_completo);
-        } elseif ($tipo_arquivo == "gif") {
-            imagegif($nova_imagem, $caminho_completo);
-        }
+    // Salva a nova imagem
+    if ($tipo_arquivo == "jpg" || $tipo_arquivo == "jpeg") {
+        imagejpeg($nova_imagem, $caminho_completo, 90);
+    } elseif ($tipo_arquivo == "png") {
+        imagepng($nova_imagem, $caminho_completo);
+    } elseif ($tipo_arquivo == "gif") {
+        imagegif($nova_imagem, $caminho_completo);
+    }
 
-        // Libera a memória
-        imagedestroy($imagem_original);
-        imagedestroy($nova_imagem);
+    // Libera a memória
+    imagedestroy($imagem_original);
+    imagedestroy($nova_imagem);
 
-        return $caminho_completo;
+    return $caminho_completo;
 }
 
 // Verifica se o formulário foi enviado
@@ -77,9 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Processa o upload da imagem
     $imagem = "";
-    if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] == 0) {
+    if(isset($_FILES['imagem']) && $_FILES['imagem']['error'] == 0) {
         $resultado_upload = redimensionarESalvarImagem($_FILES['imagem']);
-        if(strpos($resultado_upload, 'img/') ===0) {
+        if(strpos($resultado_upload, 'img/') === 0) {
             $imagem = $resultado_upload;
         } else {
             $mensagem_erro = $resultado_upload;
@@ -90,49 +89,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($id) {
         // Se o ID existe, é uma atualização
         $sql = "UPDATE fornecedores SET nome='$nome', email='$email', telefone='$telefone'";
-        if ($imagem) {
+        if($imagem) {
             $sql .= ", imagem='$imagem'";
         }
         $sql .= " WHERE id='$id'";
         $mensagem = "Fornecedor atualizado com sucesso!";
     } else {
-        // Se não há ID, é uma inserção
+        // Se não há ID, é uma nova inserção
         $sql = "INSERT INTO fornecedores (nome, email, telefone, imagem) VALUES ('$nome', '$email', '$telefone', '$imagem')";
         $mensagem = "Fornecedor cadastrado com sucesso!";
     }
 
-// Executa a query e verifica se houve erro
-if ($conn->query($sql) !== TRUE) {
-    $mensagem = "Fornecedor salvo com sucesso!";
-    $mensagem_erro = "Erro=" . $conn->error;
-}
+    // Executa a query e verifica se houve erro
+    if ($conn->query($sql) !== TRUE) {
+        $mensagem = "Erro: " . $conn->error;
+    }
 }
 
 // Verifica se foi solicitada a exclusão de um fornecedor
 if (isset($_GET['delete_id'])) {
-$delete_id = $_GET['delete_id'];
-
-// Verifica se o fornecedor tem produtos cadastrados
-$check_produtos = $conn->query("SELECT COUNT(*) as count FROM produtos WHERE fornecedor_id = '$delete_id'")->fetch_assoc();
-if ($check_produtos['count'] > 0) {
-    $mensagem = "Não é possível excluir este fornecedor pois existem produtos cadastrados por ele.";
-} else {
-    $sql = "DELETE FROM fornecedores WHERE id='$delete_id'";
-    if ($conn->query($sql) === TRUE) {
-        $mensagem = "Fornecedor excluído com sucesso!";
+    $delete_id = $_GET['delete_id'];
+    
+    // Verifica se o fornecedor tem produtos cadastrados
+    $check_produtos = $conn->query("SELECT COUNT(*) as count FROM produtos WHERE fornecedor_id = '$delete_id'")->fetch_assoc();
+    
+    if ($check_produtos['count'] > 0) {
+        $mensagem = "Não é possível excluir este fornecedor pois existem produtos cadastrados para ele.";
     } else {
-        $mensagem = "Erro ao excluir fornecedor: " . $conn->error;
+        $sql = "DELETE FROM fornecedores WHERE id='$delete_id'";
+        if ($conn->query($sql) === TRUE) {
+            $mensagem = "Fornecedor excluído com sucesso!";
+        } else {
+            $mensagem = "Erro ao excluir fornecedor: " . $conn->error;
+        }
     }
-}
 }
 
 // Busca todos os fornecedores para listar na tabela
 $fornecedores = $conn->query("SELECT * FROM fornecedores");
 
-// Se foi solocitada a edição de um fornecedor, busca os dados dele
+// Se foi solicitada a edição de um fornecedor, busca os dados dele
+$fornecedor = null;
 if (isset($_GET['edit_id'])) {
-$editar_id = $_GET['editar_id'];
-$fornecedor = $conn->query("SELECT * FROM fornecedores WHERE id='$edit_id'")->fetch_assoc();
+    $edit_id = $_GET['edit_id'];
+    $fornecedor = $conn->query("SELECT * FROM fornecedores WHERE id='$edit_id'")->fetch_assoc();
 }
 ?>
 
@@ -167,14 +167,15 @@ $fornecedor = $conn->query("SELECT * FROM fornecedores WHERE id='$edit_id'")->fe
             <br>
             <button type="submit"><?php echo $fornecedor ? 'Atualizar' : 'Cadastrar'; ?></button>
         </form>
+        
+        <!-- Exibe mensagens de sucesso ou erro -->
+        <?php
+        if (isset($mensagem)) echo "<p class='message " . (strpos($mensagem, 'Erro') !== false ? "error" : "success") . "'>$mensagem</p>";
+        if (isset($mensagem_erro)) echo "<p class='message error'>$mensagem_erro</p>";
+        ?>
 
-        <!-- Exibe mensagem de sucesso ou erro -->
-        <?php 
-        if (isset($mensagem)) echo "<p class='message " . (strpos($mensagem, 'Erro') !== false ? "error": "success") . "'>mensagem</p>";
-        if (isset($mensagem_erro)) echo "<p class='mensagem error'>$mensagem_erro</p>"; ?>
-            
         <h2>Listagem de Fornecedores</h2>
-        <!-- Tabela para listar os fornecedores-->
+        <!-- Tabela para listar os fornecedores cadastrados -->
         <table>
             <tr>
                 <th>ID</th>
@@ -193,20 +194,19 @@ $fornecedor = $conn->query("SELECT * FROM fornecedores WHERE id='$edit_id'")->fe
                 <td>
                     <?php if ($row['imagem']): ?>
                         <img src="<?php echo $row['imagem']; ?>" alt="Imagem do fornecedor" class="thumbnail">
-                    <?php else:?>
-                        Sem Imagem
+                    <?php else: ?>
+                        Sem imagem
                     <?php endif; ?>
-                    </td>
-                    <td>
-                        <a href="edit_id=<?php echo $row['id']; ?>">Editar</a>
-                        <a href="?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
-                    </td>
+                </td>
+                <td>
+                    <a href="?edit_id=<?php echo $row['id']; ?>">Editar</a>
+                    <a href="?delete_id=<?php echo $row['id']; ?>" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
                 </td>
             </tr>
             <?php endwhile; ?>
         </table>
-        </div class="actions">
-            <a href="index.php" class="back-button">Voltar</a>
+        <div class="actions">
+          <a href="index.php" class="back-button">Voltar</a>
         </div>
     </div>
 </body>
