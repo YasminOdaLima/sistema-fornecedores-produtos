@@ -1,6 +1,6 @@
 <?php
 // Inclui o arquivo que valida a sessão do usuário
-include("valida_acesso.php");
+include('valida_sessao.php');
 
 // Inclui o arquivo de conexão com o banco de dados
 include("conexao.php");
@@ -70,7 +70,7 @@ function redimensionarESalvarImagem($arquivo, $largura = 80, $altura = 80) {
 
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = $_POST['id'] 
+    $id = $_POST['id'];
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $telefone = $_POST['telefone'];
@@ -141,7 +141,7 @@ $fornecedor = $conn->query("SELECT * FROM fornecedores WHERE id='$edit_id'")->fe
 <head>
     <meta charset="UTF-8">
     <title>Cadastro de Fornecedor</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container" style="width: 900px;">
@@ -149,30 +149,29 @@ $fornecedor = $conn->query("SELECT * FROM fornecedores WHERE id='$edit_id'")->fe
         <!-- Formulário para cadastro/edição de fornecedor -->
         <form method="post" action="" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo $fornecedor['id'] ?? ''; ?>">
-
+            
             <label for="nome">Nome:</label>
             <input type="text" name="nome" value="<?php echo $fornecedor['nome'] ?? ''; ?>" required>
             
             <label for="email">Email:</label>
-            <input type="email" name="email" value="<?php echo $fornecedor['email'] ?? ''; ?>" required>
+            <input type="email" name="email" value="<?php echo $fornecedor['email'] ?? ''; ?>">
             
             <label for="telefone">Telefone:</label>
-            <input type="text" name="telefone" value="<?php echo $fornecedor['telefone'] ?? ''; ?>" required>
+            <input type="text" name="telefone" value="<?php echo $fornecedor['telefone'] ?? ''; ?>">
             
             <label for="imagem">Imagem:</label>
             <input type="file" name="imagem" accept="image/*">
             <?php if (isset($fornecedor['imagem']) && $fornecedor['imagem']): ?>
-                <img src="<?php echo $fornecedor['imagem']; ?>" alt="Imagem atual do fornecedor" 
-                class="update-image">
+                <img src="<?php echo $fornecedor['imagem']; ?>" alt="Imagem atual do fornecedor" class="update-image">
             <?php endif; ?>
             <br>
             <button type="submit"><?php echo $fornecedor ? 'Atualizar' : 'Cadastrar'; ?></button>
         </form>
 
-            <!-- Exibe mensagem de sucesso ou erro -->
-            <?php 
-            if (isset($mensagem)) echo "<p class='message " . (strpos($mensagem, 'Erro') !== false ? "error": "success") . "'>mensagem</p>";
-            if (isset($mensagem_erro)) echo "<p class='mensagem error'>$mensagem_erro</p>"; ?>
+        <!-- Exibe mensagem de sucesso ou erro -->
+        <?php 
+        if (isset($mensagem)) echo "<p class='message " . (strpos($mensagem, 'Erro') !== false ? "error": "success") . "'>mensagem</p>";
+        if (isset($mensagem_erro)) echo "<p class='mensagem error'>$mensagem_erro</p>"; ?>
             
         <h2>Listagem de Fornecedores</h2>
         <!-- Tabela para listar os fornecedores-->
